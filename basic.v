@@ -149,84 +149,112 @@ Section By_Definition.
   apply H0.
  Qed.
 
+ Theorem simpl_and_both_el: forall (Gamma Delta : Assumptions) (A B C : Formula),
+  Provable Gamma (F_Both A B) -> Provable (Gamma ++ (A_Linear A)::(A_Linear B)::nil) C ->
+            Provable (Gamma++Delta) C.
+ Proof.
+ intros.
+  apply P_BothEl with (A:=A) (B:=B).
+  apply H.
+  apply H0.
+ Qed.
+
+ Theorem simpl_choose_id: forall (Gamma : Assumptions) (A B : Formula),
+  Provable Gamma A -> Provable Gamma B -> Provable Gamma (F_Choo A B).
+ Proof.
+ intros.
+  apply P_ChooId.
+  apply H.
+  apply H0.
+ Qed.
+
+ Theorem simpl_choose_el_one: forall (Gamma : Assumptions) (A B : Formula),
+  Provable Gamma (F_Choo A B) -> Provable Gamma A.
+ Proof.
+ intros. 
+  apply P_ChooEl1 with (B:=B).
+  apply H.
+ Qed.
+ 
+ Theorem simpl_choose_el_two: forall (Gamma : Assumptions) (A B : Formula),
+  Provable Gamma (F_Choo A B) -> Provable Gamma B.
+ Proof.
+ intros.
+  apply P_ChooEl2 with (A:=A).
+  apply H.
+ Qed.
+
+ Theorem simpl_either_id_1: forall (Gamma : Assumptions) (A B : Formula),
+  Provable Gamma A -> Provable Gamma (F_Eith A B).
+ Proof.
+  intros.
+   apply P_EithId1.
+   apply H.
+ Qed.
+ 
+ Theorem simpl_either_id_2: forall (Gamma : Assumptions) (A B : Formula),
+  Provable Gamma B -> Provable Gamma (F_Eith A B).
+ Proof.
+  intros.
+   apply P_EithId2.
+   apply H.
+ Qed.
+
+ Theorem simpl_either_el: forall (Gamma Delta: Assumptions) (A B C: Formula),
+  Provable Gamma (F_Eith A B) -> Provable (Gamma ++ (A_Linear A)::nil) C ->
+            Provable (Delta ++(A_Linear B)::nil) C -> Provable (Gamma ++ Delta) C.
+ Proof.
+  intros. apply P_EithEl with (A:=A) (B:=B). apply H. apply H0. apply H1.
+ Qed.
+
 End By_Definition.
 
-Theorem theorem_prover:
- forall A F,
-  { Provable A F } + { ~ Provable A F }.
-Proof.
-Admitted.
 
-Check theorem_prover.
+Section Generic_proofs.
 
------------
-
-
-Inductive llProp : Type :=
-  | linear : llProp
-  | intuit : llProp.
-
-
-Inductive ll : list llProp -> list llProp -> Prop :=
-  | linearid : forall A, ll [(linear A)] [A]
-  | intuitid : forall A, ll [(intuit A)] [A]
-  | exchange : forall Delta Gamma A, ll (Gamma ++ Delta) [A] -> ll (Delta ++ Gamma) [A]
-  | contract : forall Gamma A B, 
-	ll (Gamma ++[(intuit A),(intuit A)]) [B] -> ll (Gamma ++ [intuit A]) [B]
-  | weaken   : forall Gamma B , ll Gamma [B] -> ll (Gamma ++ [intuit A]) [B] 
-  | lollypopIden : ll -> ll  Variable Atom : Type.
-
-Inductive Formula : Type :=
-| F_Atom : Atom -> Formula
-| F_Imples : Formula -> Formula -> Formula.
-
-Inductive Assumption : Type :=
-| A_Linear : Formula -> Assumption
-| A_Intuit : Formula -> Assumption.
-
-Definition Assumptions := list Assumption.
-
-Require Import Lists.
-Open Scope list_scope.
-
-Inductive Provable : Assumptions -> Formula -> Prop :=
-| P_L_Id : forall A,
-  Provable ((A_Linear A)::nil) A
-| P_I_Id : forall A,
-  Provable ((A_Intuit A)::nil) A.
-
-Section Example.
- Variable A : Atom.
-
- Theorem ex :
-  Provable ((A_Linear (F_Atom A))::nil) (F_Atom A).
+ Theorem gamma_intuit_assumption_proves_b: forall (Gamma: Assumptions) (A B: Formula),
+  Provable (Gamma ++ A_Linear A :: nil) B ->Provable (Gamma ++ (A_Intuit A)::nil) B.
  Proof.
-  apply P_L_Id.
+  intros.
+  apply P_ImplEl with (A:=A).
+  apply P_ImplId. apply H. apply P_I_Id.
  Qed.
-End Example.
 
+ Theorem need_for_intuit_assumptions: forall (A B : Formula),
+  Provable ((A_Linear (F_Impl A (F_OfCo B)))::(A_Linear A)::nil) (F_OfCo B).
+ Proof.
+  intros. 
+   apply P_ImplEl with (Gamma:= (A_Linear (F_Impl A (F_OfCo B)))::nil)(Delta:= (A_Linear A)::nil) (A:=A);
+   apply P_L_Id. 
+ Qed. 
+
+End Generic_proofs.
+  
 Theorem theorem_prover:
  forall A F,
   { Provable A F } + { ~ Provable A F }.
 Proof.
+ intros. induction F. induction A. right. intros H. 
+   inversion H.
+
+   (** Weakening -nil- *)
+   Focus 3. apply app_eq_nil in H0. inversion H0. inversion H4.
+   (** Both elimination -nil- *)
+   (** Focus 5. *)
+   (** Contraction -nil- *)
+   (** Focus 2. *)
+   (** Choose Elimination1 -nil- *)
+   (** Focus 6. *)
+   (** Choose Elimination2 -nil- *)
+   (** Focus 7. *)
+   (** Either Elimination -nil- *)
+   (** Focus 8. *)
+
+   (** Impl elimination -nil- *) 
+   Focus 4. apply app_eq_nil in H0. inversion H0. rewrite H4 in H1. rewrite H4 in H1. assert (Gamma ++ Delta = nil). SearchAbout Lists.  
 Admitted.
 
 Check theorem_prover.
 
------------
-
-
-Inductive llProp : Type :=
-  | linear : llProp
-  | intuit : llProp.
-
-
-Inductive ll : list llProp -> list llProp -> Prop :=
-  | linearid : forall A, ll [(linear A)] [A]
-  | intuitid : forall A, ll [(intuit A)] [A]
-  | exchange : forall Delta Gamma A, ll (Gamma ++ Delta) [A] -> ll (Delta ++ Gamma) [A]
-  | contract : forall Gamma A B, 
-	ll (Gamma ++[(intuit A),(intuit A)]) [B] -> ll (Gamma ++ [intuit A]) [B]
-  | weaken   : forall Gamma B , ll Gamma [B] -> ll (Gamma ++ [intuit A]) [B] 
-  | lollypopIden : ll -> ll  
+ 
    
