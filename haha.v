@@ -35,10 +35,14 @@ Proof.
  (** nil case *)
  inversion H. inversion H0. simpl. reflexivity. inversion H0. left. SearchAbout app.  
  apply app_eq_nil in H. inversion H. rewrite H0. rewrite H1. reflexivity.
+ (** inductive case *)
+ (** SearchAbout In. apply in_inv. *)
+ 
+ 
 
  
- (** inversion H. inversion H0. simpl. reflexivity. SearchAbout In. apply in_map_iff in H0.
- inversion H0. inversion H1. clear H H0 H1. *)
+ inversion H. inversion H0. simpl. reflexivity. SearchAbout In. clear H. apply in_map_iff in H0.
+ inversion H0. inversion H. clear H H0. destruct (x,) as (x1,y1) in H1.
  (**  *)
 
  (**Focus 3. SearchAbout In. in_map (In x l) found on right side of assumption*)
