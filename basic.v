@@ -7,12 +7,15 @@ Inductive Formula : Type :=
 | F_Choo : Formula -> Formula -> Formula
 | F_Eith : Formula -> Formula -> Formula
 | F_OfCo : Formula -> Formula.
+Hint Constructors Formula.
 
 Inductive Assumption : Type :=
 | A_Linear : Formula -> Assumption
 | A_Intuit : Formula -> Assumption.
+Hint Constructors Assumption.
 
 Definition Assumptions := list Assumption.
+Hint Unfold Assumptions.
 
 Require Import List.
 Open Scope list_scope.
@@ -35,8 +38,8 @@ Inductive Provable : Assumptions -> Formula -> Prop :=
 | P_OfCoEl  : forall (Gamma Delta:Assumptions) (A B : Formula),
   Provable Gamma (F_OfCo A) -> Provable (Delta ++ (A_Intuit A)::nil) B ->
             Provable (Gamma ++ Delta) B
-| P_ImplId  : forall (Gamma : Assumptions) (A B: Formula),
-  Provable (Gamma ++ (A_Linear A)::nil) B -> Provable Gamma (F_Impl A B)
+(*| P_ImplId  : forall (Gamma : Assumptions) (A B: Formula),
+  Provable (Gamma ++ (A_Linear A)::nil) B -> Provable Gamma (F_Impl A B)*)
 | P_ImplEl  : forall (Gamma Delta : Assumptions) (A B : Formula),
   Provable Gamma (F_Impl A B) -> Provable Delta A -> Provable (Gamma++Delta) B
 | P_BothId  : forall (Gamma Delta: Assumptions) (A B : Formula),
@@ -50,15 +53,15 @@ Inductive Provable : Assumptions -> Formula -> Prop :=
   Provable Gamma (F_Choo A B) -> Provable Gamma A
 | P_ChooEl2 : forall (Gamma : Assumptions) (A B : Formula),
   Provable Gamma (F_Choo A B) -> Provable Gamma B
+(**
 | P_EithId1 : forall (Gamma : Assumptions) (A B : Formula),
   Provable Gamma A -> Provable Gamma (F_Eith A B)
 | P_EithId2 : forall (Gamma : Assumptions) (A B : Formula),
-  Provable Gamma B -> Provable Gamma (F_Eith A B)
+  Provable Gamma B -> Provable Gamma (F_Eith A B) *)
 | P_EithEl  : forall (Gamma Delta: Assumptions) (A B C: Formula),
   Provable Gamma (F_Eith A B) -> Provable (Gamma ++ (A_Linear A)::nil) C ->
             Provable (Delta ++(A_Linear B)::nil) C -> Provable (Gamma ++ Delta) C.
-
- 
+Hint Constructors Provable.
 
 Section By_Definition.
 
@@ -123,13 +126,13 @@ Section By_Definition.
   exact H0.
  Qed.
 
- Theorem simpl_impl_id : forall (Gamma : Assumptions) (A B: Formula),
+(** Theorem simpl_impl_id : forall (Gamma : Assumptions) (A B: Formula),
   Provable (Gamma ++ (A_Linear A)::nil) B -> Provable Gamma (F_Impl A B).
  Proof.
  intros.
   apply P_ImplId.
   apply H.
- Qed.
+ Qed. *)
  
  Theorem simpl_impl_elimination : forall (Gamma Delta : Assumptions) (A B : Formula),
   Provable Gamma (F_Impl A B) -> Provable Delta A -> Provable (Gamma++Delta) B.
@@ -184,21 +187,21 @@ Section By_Definition.
   apply H.
  Qed.
 
- Theorem simpl_either_id_1: forall (Gamma : Assumptions) (A B : Formula),
+(** Theorem simpl_either_id_1: forall (Gamma : Assumptions) (A B : Formula),
   Provable Gamma A -> Provable Gamma (F_Eith A B).
  Proof.
   intros.
    apply P_EithId1.
    apply H.
- Qed.
+ Qed. *)
  
- Theorem simpl_either_id_2: forall (Gamma : Assumptions) (A B : Formula),
+(** Theorem simpl_either_id_2: forall (Gamma : Assumptions) (A B : Formula),
   Provable Gamma B -> Provable Gamma (F_Eith A B).
  Proof.
   intros.
    apply P_EithId2.
    apply H.
- Qed.
+ Qed. *)
 
  Theorem simpl_either_el: forall (Gamma Delta: Assumptions) (A B C: Formula),
   Provable Gamma (F_Eith A B) -> Provable (Gamma ++ (A_Linear A)::nil) C ->
@@ -212,13 +215,13 @@ End By_Definition.
 
 Section Generic_proofs.
 
- Theorem gamma_intuit_assumption_proves_b: forall (Gamma: Assumptions) (A B: Formula),
+(** Theorem gamma_intuit_assumption_proves_b: forall (Gamma: Assumptions) (A B: Formula),
   Provable (Gamma ++ A_Linear A :: nil) B ->Provable (Gamma ++ (A_Intuit A)::nil) B.
  Proof.
   intros.
   apply P_ImplEl with (A:=A).
   apply P_ImplId. apply H. apply P_I_Id.
- Qed.
+ Qed. *)
 
  Theorem need_for_intuit_assumptions: forall (A B : Formula),
   Provable ((A_Linear (F_Impl A (F_OfCo B)))::(A_Linear A)::nil) (F_OfCo B).
@@ -229,7 +232,81 @@ Section Generic_proofs.
  Qed. 
 
 End Generic_proofs.
-  
+
+(*
+Section not_decide.
+ Variable a : Atom.  
+
+ Lemma nil_proves:
+   exists F, Provable nil F.
+ Proof.
+  exists (F_Impl (F_Atom a) (F_Atom a)).
+  apply P_ImplId.
+  simpl.
+  apply P_L_Id.
+ Qed.
+End not_decide.
+*)
+
+Theorem nil_doesnt_prove:
+ forall F,
+  ~ Provable nil F.
+Proof.
+Admitted.
+
+(** Fixpoint all_theorems_fun (A:Assumptions) : list Formula :=
+
+
+
+ match A with
+ | nil =>
+   nil
+ | a :: A =>
+   match a with
+   | A_Intuit F =>
+     let A_sub := all_theorems_fun A in
+     A_sub
+     ++ (suppose that (F -> b) is in A_sub,
+         then b should be in the result,
+          because we can get (F->b) then apply P_ImplEl with f)
+   | A_Linear F =>
+     nil
+   end
+ end. *)
+
+Theorem all_theorems:
+ forall A,
+  { FS | forall F, Provable A F <-> In F FS }.
+Proof.
+ intros. induction A.
+
+ exists nil. intros F. split; intros P.
+ 
+ unfold In. eapply nil_doesnt_prove. apply P.
+ unfold In in P. tauto.
+
+ (** If we add an assumption will it still be true? Well the old proof is no longer valid
+   what is valid though is a proof where we use it and all of the previous items. *)
+ destruct IHA as [ FS P_eq_FS ].
+ destruct a as [a | a].
+ Focus 2.
+
+ exists (FS). intros F. split.
+ Focus 2.
+
+ intros IN. rewrite <- P_eq_FS in IN.
+ apply (P_Exc A (A_Intuit a::nil) F).
+ apply (P_Weaken A a F).
+ apply IN.
+
+ Focus 2.
+ 
+
+ intros P. rewrite <- P_eq_FS.
+         
+ 
+
+
 Theorem theorem_prover:
  forall A F,
   { Provable A F } + { ~ Provable A F }.
@@ -239,6 +316,8 @@ Proof.
 
    (** Weakening -nil- *)
    Focus 3. apply app_eq_nil in H0. inversion H0. inversion H4.
+   (** Exchange -nil- *)
+   Focus 1. apply app_eq_nil in H0. inversion H0.
    (** Both elimination -nil- *)
    (** Focus 5. *)
    (** Contraction -nil- *)

@@ -1,0 +1,3 @@
+Require Import List.
+
+(** show all possible ordered splittings of a list.)

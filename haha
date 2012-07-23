@@ -1,0 +1,21 @@
+Require Import List.
+Open Scope list_scope.
+
+Check pair.
+
+Check cons.
+
+
+
+Fixpoint all_splits_two {X:Type} (a: list X) (b : list X) : list ((list X)*(list X)):=
+ match b with
+  | nil => (a, nil)::nil
+  | f::t => (a, b):: (all_splits_two (a++(f::nil)) t)
+ end.
+ 
+
+Fixpoint all_splits {X:Type} (a: list X) : list ((list X)*(list X)) :=
+ (all_splits_two nil (a)).
+
+
+Eval simpl in (all_splits (1::2::3::4::nil)).
