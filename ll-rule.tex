@@ -1,0 +1,155 @@
+\documentclass[12pt]{article}
+\usepackage{bussproofs}
+\usepackage{comment}
+\usepackage{cmll}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{latexsym}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{property}[theorem]{Property}
+\newtheorem{corolary}[theorem]{Corolary}
+\theoremstyle{definition}
+\newtheorem{define}[theorem]{Definition}
+\newcommand\nb[1]{{#1}^{\bot}}
+\title{Linear-Logic Rule}
+\author{Arthur MILCHIOR}
+% This is the "centered" symbol
+\def\fCenter{{\mbox{\Large$\rightarrow$}}}
+
+% Optional to turn on the short abbreviations
+\EnableBpAbbreviations
+
+% \alwaysRootAtTop  % makes proofs upside down
+% \alwaysRootAtBottom % -- this is the default setting
+
+\begin{document}
+\section{Linear logic}
+\subsection{Rule of linear sequent calculus}
+
+\subsubsection{Additive}
+\begin{minipage}[l]{.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A$}
+\AxiomC{$\vdash\Gamma,B$}
+\RightLabel{$\with$}
+\BinaryInfC{$\vdash\Gamma,A\with B$}
+\end{prooftree}\end{minipage}
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A_i$}
+\RightLabel{$\oplus_i$}
+\UnaryInfC{$\vdash\Gamma,A_1\oplus A_2$}
+\end{prooftree}\end{minipage} 
+
+\begin{minipage}[l]{.50\linewidth} 
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A$}
+\RightLabel{$\forall$, $x$ free in $\Gamma$}
+\UnaryInfC{$\Gamma,\forall x: A$}
+\end{prooftree}\end{minipage}
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A$}
+\RightLabel{$\exists$}
+\UnaryInfC{$\Gamma,\exists x: A$}
+\end{prooftree}\end{minipage}
+
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{$\top$}
+\UnaryInfC{$\vdash\Gamma,\top$}
+\end{prooftree}
+\end{minipage}
+
+\begin{minipage}[l]{.50\linewidth}
+There is no for 0.
+\end{minipage}
+
+\subsubsection{Multiplicative}
+
+\begin{minipage}[l]{.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A$}
+\AxiomC{$\vdash\Delta,B$}
+\RightLabel{$\otimes$}
+\BinaryInfC{$\vdash\Gamma,\Delta,A\otimes B$}
+\end{prooftree}\end{minipage}
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A_1,A_2$}
+\RightLabel{$\parr$}
+\UnaryInfC{$\vdash\Gamma,A_1\parr A_2$}
+\end{prooftree}\end{minipage} 
+
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{$1$}
+\UnaryInfC{$\vdash1$}
+\end{prooftree}\end{minipage}
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma$}
+\RightLabel{$\bot$}
+\UnaryInfC{$\vdash\Gamma,\bot$}
+\end{prooftree}\end{minipage}
+
+There is usually no multiplicative quantifiers in linear logic.
+
+\subsubsection{Exponentials}
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,?A,?A$}
+\RightLabel{contraction}
+\UnaryInfC{$\vdash\Gamma,?A$}
+\end{prooftree}\end{minipage} 
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma$}
+\RightLabel{Weakening}
+\UnaryInfC{$\vdash\Gamma,?A$}
+\end{prooftree}\end{minipage}
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A$}
+\RightLabel{Derilection}
+\UnaryInfC{$\vdash\Gamma,?A$}
+\end{prooftree}\end{minipage} 
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash?\Gamma,A$}
+\RightLabel{Promotion}
+\UnaryInfC{$\vdash?\Gamma,!A$}
+\end{prooftree}\end{minipage}
+
+\subsubsection{Identity}
+
+\begin{minipage}[l]{.50\linewidth}
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{axiom}
+\UnaryInfC{$\vdash A,\nb{A}$}
+\end{prooftree}\end{minipage}
+\begin{minipage}[l] {.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\Gamma,A$}
+\AxiomC{$\vdash \nb{A},\Delta$}
+\RightLabel{cut}
+\BinaryInfC{$\vdash \Gamma,×\Delta$}
+\end{prooftree}\end{minipage}
+
+\begin{minipage}[l]{.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\nb{A}\vdash\Gamma$}
+\RightLabel{$\nb{R}$}
+\UnaryInfC{$\vdash A,\Gamma$}
+\end{prooftree}\end{minipage}
+\begin{minipage}[l]{.50\linewidth}
+\begin{prooftree}
+\AxiomC{$\vdash\nb{A},\Gamma$}
+\RightLabel{$\nb{L}$}
+\UnaryInfC{$A\vdash\Gamma$}
+\end{prooftree}\end{minipage}
+\end{document}
