@@ -42,8 +42,12 @@ Proof.
 
  
  inversion H. inversion H0. simpl. reflexivity. SearchAbout In. clear H. apply in_map_iff in H0.
- inversion H0. inversion H. clear H H0. destruct (x,) as (x1,y1) in H1.
+ inversion H0. inversion H. clear H H0. destruct x. apply IHl in H2. inversion H1. rewrite <-H3.
+ rewrite <-H2. reflexivity. 
  (**  *)
+ rewrite in_map_iff. destruct a. left. simpl in H. rewrite H. auto. right. exists (a,b). split.
+ inversion H. auto. apply IHl. inversion H. auto. Qed.
+ 
 
  (**Focus 3. SearchAbout In. in_map (In x l) found on right side of assumption*)
  
