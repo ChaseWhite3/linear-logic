@@ -274,6 +274,151 @@ Admitted.
    end
  end. *)
 
+Section all_cases.
+ Variable all : Assumptions -> list Formula.
+ Hypothesis all_nil_eq:
+  all nil = nil.
+ Hint Rewrite all_nil_eq.
+ Hypothesis all_sound:
+  forall A f,
+   In f (all A) -> Provable A f.
+ Hint Resolve all_sound.
+
+Definition all_P_L_Id A :=
+ match A with
+ | nil => nil
+ | a :: l =>
+   match l with
+   | nil => 
+     match a with
+     | A_Linear f =>
+	f :: nil
+     | _ =>
+        nil
+     end
+   | _ :: _ =>
+     nil
+   end
+ end.
+
+Lemma all_P_L_Id_sound:
+ forall A f,
+  In f (all_P_L_Id A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl; intros f; try tauto.
+ destruct A as [|b A]; simpl; try tauto.
+ destruct a as [a|a]; simpl; try tauto.
+ intros [EQ | F]; try tauto.
+ rewrite EQ.
+ eauto.
+ (** apply P_L_Id. **)
+Qed.
+
+Fixpoint all_splits {X:Type} (a: list X) : list ((list X)*(list X)) :=
+ (nil,a) :: match a with
+  | nil => nil
+  | f :: t => map (fun p => match p with 
+			     |(x,y) => ((f :: x),y)
+                            end)
+                        (all_splits t)
+ end.
+
+Theorem all_splits_correct : forall {X:Type} (l a b: list X) ,
+ In (a,b) (all_splits l) <-> a++b = l.
+Proof.
+ induction l as [|e l]; intros a b; simpl; split; intros H.
+ (** nil case *)
+ inversion H. inversion H0. simpl. reflexivity. inversion H0. left.
+ apply app_eq_nil in H. inversion H. rewrite H0. rewrite H1. reflexivity.
+ (** inductive case *)
+ inversion H. inversion H0. simpl. reflexivity. SearchAbout In. clear H. apply in_map_iff in H0.
+ inversion H0. inversion H. clear H H0. destruct x. apply IHl in H2. inversion H1. rewrite <-H3.
+ rewrite <-H2. reflexivity. 
+ (**  *)
+ rewrite in_map_iff. destruct a. left. simpl in H. rewrite H. auto. right. exists (a,b). split.
+ inversion H. auto. apply IHl. inversion H. auto. Qed.
+
+Definition all_P_OfCoEl all (A:Assumptions) :=
+ flat_map
+  (fun gamma_delta:(Assumptions*Assumptions) =>
+    let (gamma,delta) := gamma_delta in
+    let gamma_proves := all gamma in
+    flat_map
+     (fun f =>
+      match f with
+      | F_OfCo f_a =>
+        all (delta ++ ((A_Intuit f_a)::nil))
+      | _ =>
+        nil
+      end)
+     gamma_proves)
+  (all_splits A).
+
+Theorem all_P_OfCoEl_sound:
+ forall A f,
+  In f (all_P_OfCoEl all A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl; intros f.
+
+ unfold all_P_OfCoEl. simpl. rewrite all_nil_eq. 
+ simpl.
+
+ tauto.
+ unfold all_P_OfCoEl. rewrite in_flat_map.
+ intros [[gamma delta] [In_S In_a]].
+ rewrite in_flat_map in In_a.
+ destruct In_a as [a_f [In_a_g In_a_d]].
+ rewrite (all_splits_correct (a::A) gamma delta) in In_S.
+ rewrite <- In_S.
+ destruct a_f; simpl in In_a_d; try tauto.
+ eauto.
+ (** apply (P_OfCoEl gamma delta a_f f).
+     apply all_sound. exact In_a_g.
+     apply all_sound. exact In_a_d. **)
+Qed.
+
+End all_cases.
+
+Fixpoint all_theorems (n:nat) A :=
+ match n with
+ | O => nil
+ | S n =>
+  (all_P_L_Id A)
+  ++ (all_P_OfCoEl (all_theorems n) A)
+  (* ++ one for each case *)
+ end.
+
+Theorem all_theorems_nil:
+ forall n,
+  all_theorems n nil = nil.
+Proof.
+ induction n as [|n]; simpl; try tauto.
+
+ (* one for each case *)
+ unfold all_P_OfCoEl. simpl. rewrite IHn.
+ simpl. tauto.
+Qed.
+
+Theorem all_theorems_sound:
+ forall n A f,
+   In f (all_theorems n A) -> Provable A f.
+Proof.
+ induction n as [|n];
+  intros A f;
+  simpl.
+ tauto.
+ rewrite in_app_iff.
+ intros [In_L_Id | In_P_OfCoEl (*| one for each case *) ].
+ apply all_P_L_Id_sound. exact In_L_Id.
+ apply (all_P_OfCoEl_sound (all_theorems n)).
+ apply all_theorems_nil.
+ apply IHn.
+ exact In_P_OfCoEl.
+Qed.
+
+(* Completeness: *)
+(* Provable -> In needs a bound *)
+
 Theorem all_theorems:
  forall A,
   { FS | forall F, Provable A F <-> In F FS }.

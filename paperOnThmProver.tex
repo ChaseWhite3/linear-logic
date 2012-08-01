@@ -1,6 +1,22 @@
 % Example LaTeX document for GP111 - note % sign indicates a comment
-\documentstyle[11pt]{article}
+
+\documentclass[12pt]{article}
+\usepackage{bussproofs}
+\usepackage{comment}
+\usepackage{cmll}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{latexsym}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{property}[theorem]{Property}
+\newtheorem{corolary}[theorem]{Corolary}
+\theoremstyle{definition}
+\newtheorem{define}[theorem]{Definition}
+\newcommand\nb[1]{{#1}^{\bot}}
+%\documentstyle[11pt]{article}
 % Default margins are too wide all the way around. I reset them here
+
 \setlength{\topmargin}{-.5in}
 \setlength{\textheight}{9in}
 \setlength{\oddsidemargin}{.125in}
@@ -132,7 +148,22 @@ numbers them consecutively within your document, like this:
 
 %Linear logic proper
 It has been said that if "traditional logic is about truth, then linear logic is about food."  In other words linear logic is type of logic that is concerned with resources.
-For instance consider this proposition in sequent logic. 
+For instance consider this proposition in sequent logic, 
+\begin{minipage}[l]{.50\linewidth}
+\begin{prooftree}
+\AxiomC{$$}
+%\AxiomC{$\vdash\Gamma,B$}
+%\RightLabel{$\with$}
+\UnaryInfC{$\langle A \multimap B\rangle ,\langle A\rangle \nvdash A \otimes  B$}
+\end{prooftree}
+\end{minipage}
+%\begin{minipage}[l] {.50\linewidth}
+%\begin{prooftree}
+%\AxiomC{$\vdash\Gamma,A_i$}
+%\RightLabel{$\oplus_i$}
+%\UnaryInfC{$\vdash\Gamma,A_1\oplus A_2$}
+%\end{prooftree}\end{minipage} 
+
 
 %Explain certain set of inference rules I used.
 
