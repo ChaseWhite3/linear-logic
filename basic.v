@@ -28,10 +28,10 @@ Inductive Provable : Assumptions -> Formula -> Prop :=
 | P_Exc     : forall (Gamma Delta:Assumptions) (A: Formula),
   Provable (Gamma++Delta) A -> Provable (Delta ++ Gamma ) A
 | P_Contract: forall (Gamma:Assumptions) (A B:Formula),
-  Provable (Gamma ++ (A_Intuit A)::(A_Intuit A)::nil) B ->
-            Provable (Gamma ++ (A_Intuit A)::nil) B
+  Provable ((A_Intuit A)::(A_Intuit A)::Gamma) B ->
+            Provable ((A_Intuit A)::Gamma) B
 | P_Weaken  : forall (Gamma:Assumptions) (A B: Formula),
-  Provable Gamma B -> Provable (Gamma++(A_Intuit A)::nil) B
+  Provable Gamma B -> Provable ((A_Intuit A)::Gamma) B
 | P_OfCoId  : forall (Gamma:Assumptions) (A : Formula),
   (forall A, In A Gamma -> exists F, A = A_Intuit F) ->
   Provable Gamma A -> Provable Gamma (F_OfCo A)
@@ -88,8 +88,8 @@ Section By_Definition.
  Qed.
 
  Theorem simple_contract : forall (Gamma : Assumptions) (A B : Atom),
-  Provable (Gamma ++ (A_Intuit (F_Atom A))::(A_Intuit (F_Atom A))::nil) (F_Atom B) ->
-            Provable (Gamma ++ (A_Intuit (F_Atom A))::nil) (F_Atom B).
+  Provable ((A_Intuit (F_Atom A))::(A_Intuit (F_Atom A))::Gamma) (F_Atom B) ->
+            Provable ((A_Intuit (F_Atom A))::Gamma) (F_Atom B).
  Proof.
  intros.
   apply P_Contract.
@@ -97,7 +97,7 @@ Section By_Definition.
  Qed.
  
  Theorem simple_weakening : forall (Gamma:Assumptions) (A B : Atom),
-  Provable Gamma (F_Atom B) -> Provable (Gamma++(A_Intuit (F_Atom A))::nil) (F_Atom B).
+  Provable Gamma (F_Atom B) -> Provable ((A_Intuit (F_Atom A))::Gamma) (F_Atom B).
  Proof.
  intros.
   apply P_Weaken.
@@ -371,11 +371,130 @@ Proof.
  rewrite (all_splits_correct (a::A) gamma delta) in In_S.
  rewrite <- In_S.
  destruct a_f; simpl in In_a_d; try tauto.
- eauto.
- (** apply (P_OfCoEl gamma delta a_f f).
-     apply all_sound. exact In_a_g.
-     apply all_sound. exact In_a_d. **)
+ (** eauto. *)
+ apply (P_OfCoEl gamma delta a_f f).
+ apply all_sound. exact In_a_g.
+ apply all_sound. exact In_a_d. 
 Qed.
+
+Definition all_P_I_Id A:=
+ match A with
+ | nil => nil
+ | a :: l =>
+   match l with
+   | nil => 
+     match a with
+     | A_Intuit f =>
+	f :: nil
+     | _ =>
+        nil
+     end
+   | _ :: _ =>
+     nil
+   end
+ end.
+
+Lemma all_P_I_Id_sound:
+ forall A f,
+  In f (all_P_I_Id A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl; intros f; try tauto.
+ destruct A as [|b A]; simpl; try tauto.
+ destruct a as [a|a]; simpl; try tauto.
+ intros [EQ | F]; try tauto.
+ rewrite EQ.
+ eauto.
+ (** apply P_L_Id. **)
+Qed.
+
+(** Definition all_P_OfCoEl all (A:Assumptions) :=
+ flat_map
+  (fun gamma_delta:(Assumptions*Assumptions) =>
+    let (gamma:Assumptions ,delta :Assumptions):(Assumptions*Assumptions) := gamma_delta in
+    let gamma_proves :list Formula  := all gamma in
+    flat_map
+     (fun f : Formula =>
+      match f with
+      | F_OfCo f_a : formula  =>
+        all (delta : Assumptions ++ ((A_Intuit f_a)::nil))
+      | _ =>
+        nil
+      end)
+     gamma_proves : list Formula )
+  (all_splits A). *)
+
+Check all_P_OfCoEl. 
+
+Print flat_map.
+
+Definition all_P_Exc (all: Assumptions -> list Formula) (A:Assumptions) :=
+ flat_map (** make 1 list out of something done to every element of the list you pass in *)
+  (fun gamma_delta: (Assumptions*Assumptions) =>
+    let (gamma, delta) :=gamma_delta in
+     all (delta++ gamma))
+  (all_splits A).
+
+Check all_P_Exc.
+Lemma all_P_Exc_sound:
+ forall A f,
+  In f (all_P_Exc all A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl; intros f.
+ unfold all_P_Exc. simpl. rewrite all_nil_eq. simpl. tauto.
+
+ unfold all_P_Exc. rewrite in_flat_map.
+ intros [[gamma delta] [In_S In_a]].
+ rewrite (all_splits_correct (a::A) gamma delta) in In_S.
+ rewrite <- In_S.
+ eauto.
+ Qed.
+
+
+Definition all_P_Contract (all: Assumptions -> list Formula) (A:Assumptions) : list Formula :=
+ match A with
+  | (A_Intuit f_a)::t => (all ((A_Intuit f_a)::(A_Intuit f_a)::t))
+  | _ => nil
+  end.
+
+Lemma all_P_Contract_Sound:
+ forall A f,
+  In f (all_P_Contract all A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl.
+ tauto. 
+ intros. destruct a. apply in_nil in H. tauto.
+ eauto.
+ Qed.
+ 
+ 
+
+Definition all_P_Weaken (all: Assumptions -> list Formula) (A:Assumptions) :=
+ match A with
+  | (A_Intuit f_a)::t => (all t)
+  | _ => nil
+  end. 
+
+Lemma all_P_Weaken_Sound:
+ forall A f,
+  In f (all_P_Weaken all A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl.
+ tauto.
+ intros. destruct a. apply in_nil in H. 
+ tauto.
+ eauto.
+ Qed.
+
+
+
+Definition all_P_OfCoId (all: Assumptions -> list Formula) (A:Assumptions) :=
+
+ 
+
+              
+  
+ 
+
 
 End all_cases.
 
@@ -384,6 +503,7 @@ Fixpoint all_theorems (n:nat) A :=
  | O => nil
  | S n =>
   (all_P_L_Id A)
+  ++ (all_P_I_Id A)
   ++ (all_P_OfCoEl (all_theorems n) A)
   (* ++ one for each case *)
  end.
@@ -419,40 +539,8 @@ Qed.
 (* Completeness: *)
 (* Provable -> In needs a bound *)
 
-Theorem all_theorems:
- forall A,
-  { FS | forall F, Provable A F <-> In F FS }.
-Proof.
- intros. induction A.
-
- exists nil. intros F. split; intros P.
- 
- unfold In. eapply nil_doesnt_prove. apply P.
- unfold In in P. tauto.
-
- (** If we add an assumption will it still be true? Well the old proof is no longer valid
-   what is valid though is a proof where we use it and all of the previous items. *)
- destruct IHA as [ FS P_eq_FS ].
- destruct a as [a | a].
- Focus 2.
-
- exists (FS). intros F. split.
- Focus 2.
-
- intros IN. rewrite <- P_eq_FS in IN.
- apply (P_Exc A (A_Intuit a::nil) F).
- apply (P_Weaken A a F).
- apply IN.
-
- Focus 2.
- 
-
- intros P. rewrite <- P_eq_FS.
          
- 
-
-
-Theorem theorem_prover:
+(** Theorem theorem_prover:
  forall A F,
   { Provable A F } + { ~ Provable A F }.
 Proof.
@@ -478,7 +566,7 @@ Proof.
    Focus 4. apply app_eq_nil in H0. inversion H0. rewrite H4 in H1. rewrite H4 in H1. assert (Gamma ++ Delta = nil). SearchAbout Lists.  
 Admitted.
 
-Check theorem_prover.
+Check theorem_prover. *)
 
  
    
