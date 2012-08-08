@@ -456,7 +456,7 @@ Definition all_P_Contract (all: Assumptions -> list Formula) (A:Assumptions) : l
   | _ => nil
   end.
 
-Lemma all_P_Contract_Sound:
+Lemma all_P_Contract_sound:
  forall A f,
   In f (all_P_Contract all A) -> Provable A f.
 Proof.
@@ -474,7 +474,7 @@ Definition all_P_Weaken (all: Assumptions -> list Formula) (A:Assumptions) :=
   | _ => nil
   end. 
 
-Lemma all_P_Weaken_Sound:
+Lemma all_P_Weaken_sound:
  forall A f,
   In f (all_P_Weaken all A) -> Provable A f.
 Proof.
@@ -485,13 +485,51 @@ Proof.
  eauto.
  Qed.
 
+(** P_OfCoId  : forall (Gamma:Assumptions) (A : Formula),
+     (forall A, In A Gamma -> exists F, A = A_Intuit F) ->
+     Provable Gamma A -> Provable Gamma (F_OfCo A) *)
+
+Definition all_intuit :=
+  forallb (fun a => match a with
+                    | A_Intuit _ => true
+                    | _ => false
+                    end).
+
+Eval compute in all_intuit nil.
+Variable Z:Atom.
+Eval compute in all_intuit ((A_Intuit (F_Atom Z))::nil).
+Eval compute in all_intuit ((A_Intuit (F_Atom Z))::(A_Intuit (F_Atom Z))::(A_Intuit (F_Atom Z))::nil).
+Eval compute in all_intuit ((A_Intuit (F_Atom Z))::(A_Linear (F_Atom Z))::(A_Intuit (F_Atom Z))::nil).
+Eval compute in all_intuit ((A_Linear (F_Atom Z))::nil).
 
 
 Definition all_P_OfCoId (all: Assumptions -> list Formula) (A:Assumptions) :=
+ let gamma_proves := if all_intuit A then all A else nil in
+ flat_map 
+  (fun f =>
+   match f with
+    |F_OfCo f_a =>
+      f_a::nil
+    |_ => nil
+   end)
+  gamma_proves.
 
- 
+Lemma all_P_OfCoId_sound:
+ forall A f,
+  In f (all_P_OfCoId all A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl; intros f.
+ intros. unfold all_P_OfCoId in H. simpl in H. 
+ rewrite all_nil_eq in H. inversion H.
+ intros. unfold all_P_OfCoId in H. 
+ rewrite in_flat_map in H.
+ destruct H as [x [left right]]. 
+ destruct x; simpl in right; try tauto.
+ unfold all_intuit in left. SearchAbout forallb. 
+ destruct a. simpl in left. inversion left. 
+ simpl in left. SearchAbout forallb. 
+ Check P_OfCoId.
 
-              
   
  
 
