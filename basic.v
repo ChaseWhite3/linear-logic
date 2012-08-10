@@ -407,22 +407,6 @@ Proof.
  (** apply P_L_Id. **)
 Qed.
 
-(** Definition all_P_OfCoEl all (A:Assumptions) :=
- flat_map
-  (fun gamma_delta:(Assumptions*Assumptions) =>
-    let (gamma:Assumptions ,delta :Assumptions):(Assumptions*Assumptions) := gamma_delta in
-    let gamma_proves :list Formula  := all gamma in
-    flat_map
-     (fun f : Formula =>
-      match f with
-      | F_OfCo f_a : formula  =>
-        all (delta : Assumptions ++ ((A_Intuit f_a)::nil))
-      | _ =>
-        nil
-      end)
-     gamma_proves : list Formula )
-  (all_splits A). *)
-
 Check all_P_OfCoEl. 
 
 Print flat_map.
@@ -502,37 +486,84 @@ Eval compute in all_intuit ((A_Intuit (F_Atom Z))::(A_Intuit (F_Atom Z))::(A_Int
 Eval compute in all_intuit ((A_Intuit (F_Atom Z))::(A_Linear (F_Atom Z))::(A_Intuit (F_Atom Z))::nil).
 Eval compute in all_intuit ((A_Linear (F_Atom Z))::nil).
 
+Lemma all_intuit_correct:
+ forall A,
+  true = all_intuit A ->
+  forall a, In a A -> exists F, a = A_Intuit F.
+Proof.
+ induction A; simpl. tauto. 
+ destruct a; simpl. intros H. inversion H.
+ intros EQ a [EQ_a | IN_a]. exists f. symmetry. tauto.
+ auto.
+Qed.
 
 Definition all_P_OfCoId (all: Assumptions -> list Formula) (A:Assumptions) :=
  let gamma_proves := if all_intuit A then all A else nil in
  flat_map 
   (fun f =>
-   match f with
-    |F_OfCo f_a =>
-      f_a::nil
-    |_ => nil
-   end)
+    (F_OfCo f) :: nil)
   gamma_proves.
 
 Lemma all_P_OfCoId_sound:
  forall A f,
   In f (all_P_OfCoId all A) -> Provable A f.
 Proof.
- induction A as [|a A]; simpl; intros f.
- intros. unfold all_P_OfCoId in H. simpl in H. 
- rewrite all_nil_eq in H. inversion H.
- intros. unfold all_P_OfCoId in H. 
- rewrite in_flat_map in H.
- destruct H as [x [left right]]. 
- destruct x; simpl in right; try tauto.
- unfold all_intuit in left. SearchAbout forallb. 
- destruct a. simpl in left. inversion left. 
- simpl in left. SearchAbout forallb. 
- Check P_OfCoId.
+ unfold all_P_OfCoId.
+ induction A as [|a A]; simpl; intros f; rewrite in_flat_map; simpl.
 
-  
- 
+ rewrite all_nil_eq. simpl.
+ intros [x [H_F H_A]]. tauto.
 
+ intros [x [H_I [H_Xeq | H_F]]]; try tauto.
+ rewrite <- H_Xeq in *. clear H_Xeq f.
+ destruct a as [a|a]; simpl in H_I.
+ tauto.
+ remember (all_intuit A). destruct b.
+ apply all_sound in H_I.
+ apply P_OfCoId.
+
+ apply all_intuit_correct. simpl. tauto.
+ tauto.
+ simpl in H_I.
+ tauto.
+Qed.
+
+(** Definition all_P_OfCoEl all (A:Assumptions) :=
+ flat_map
+  (fun gamma_delta:(Assumptions*Assumptions) =>
+    let (gamma:Assumptions ,delta :Assumptions):(Assumptions*Assumptions) := gamma_delta in
+    let gamma_proves :list Formula  := all gamma in
+    flat_map
+     (fun f : Formula =>
+      match f with
+      | F_OfCo f_a : formula  =>
+        all (delta : Assumptions ++ ((A_Intuit f_a)::nil))
+      | _ =>
+        nil
+      end)
+     gamma_proves : list Formula )
+  (all_splits A). *)
+
+Definition all_P_ImplEl (all: Assumptions -> list Formula) (A:Assumptions) :=
+ flat_map
+  (fun gamma_delta:(Assumptions*Assumptions) =>
+    let (gamma,delta) := gamma_delta in
+    let gamma_proves := all gamma in
+    let delta_proves := all delta in
+    flat_map
+     (fun fd =>
+      flat_map
+      (fun fg =>
+       match fg with
+       | F_Impl f_a f_b =>
+         if fd = f_a then
+         f_b::nil else nil
+       | _ =>
+        nil
+       end)
+      gamma_proves)
+     delta_proves)
+  (all_splits A).
 
 End all_cases.
 
@@ -542,7 +573,12 @@ Fixpoint all_theorems (n:nat) A :=
  | S n =>
   (all_P_L_Id A)
   ++ (all_P_I_Id A)
+  ++ (all_P_Exc (all_theorems n) A)
+  ++ (all_P_Contract (all_theorems n) A)
+  ++ (all_P_Weaken (all_theorems n) A)
+  ++ (all_P_OfCoId (all_theorems n) A)
   ++ (all_P_OfCoEl (all_theorems n) A)
+  
   (* ++ one for each case *)
  end.
 
@@ -554,7 +590,8 @@ Proof.
 
  (* one for each case *)
  unfold all_P_OfCoEl. simpl. rewrite IHn.
- simpl. tauto.
+ simpl. unfold all_P_Exc. simpl. rewrite IHn.
+ unfold all_P_OfCoId. simpl. rewrite IHn. tauto.
 Qed.
 
 Theorem all_theorems_sound:
@@ -566,8 +603,28 @@ Proof.
   simpl.
  tauto.
  rewrite in_app_iff.
- intros [In_L_Id | In_P_OfCoEl (*| one for each case *) ].
+ rewrite in_app_iff.
+ rewrite in_app_iff.
+ rewrite in_app_iff.
+ rewrite in_app_iff.
+ rewrite in_app_iff.
+ intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |In_P_OfCoEl]]]]](*| one for each case *) ].
  apply all_P_L_Id_sound. exact In_L_Id.
+ apply all_P_I_Id_sound. exact In_I_Id.
+ apply (all_P_Exc_sound (all_theorems n)).
+ apply all_theorems_nil.
+ apply IHn.
+ exact In_P_Exc.
+ apply (all_P_Contract_sound (all_theorems n)).
+ apply IHn.
+ exact In_P_Contract.
+ apply (all_P_Weaken_sound (all_theorems n)).
+ apply IHn.
+ apply In_P_Weaken.
+ apply (all_P_OfCoId_sound (all_theorems n)).
+ apply all_theorems_nil.
+ apply IHn.
+ exact In_P_OfCoId. 
  apply (all_P_OfCoEl_sound (all_theorems n)).
  apply all_theorems_nil.
  apply IHn.
