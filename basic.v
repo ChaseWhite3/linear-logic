@@ -1,4 +1,8 @@
 Variable Atom : Type.
+Hypothesis Atom_eq_dec:
+ forall (x y:Atom),
+  {x = y} + {x <> y}.
+Hint Resolve Atom_eq_dec.
 
 Inductive Formula : Type :=
 | F_Atom : Atom -> Formula
@@ -8,6 +12,13 @@ Inductive Formula : Type :=
 | F_Eith : Formula -> Formula -> Formula
 | F_OfCo : Formula -> Formula.
 Hint Constructors Formula.
+
+Theorem Formula_eq_dec:
+ forall (x y:Formula),
+  {x = y} + {x <> y}.
+Proof.
+ decide equality.
+Qed.
 
 Inductive Assumption : Type :=
 | A_Linear : Formula -> Assumption
@@ -528,22 +539,6 @@ Proof.
  tauto.
 Qed.
 
-(** Definition all_P_OfCoEl all (A:Assumptions) :=
- flat_map
-  (fun gamma_delta:(Assumptions*Assumptions) =>
-    let (gamma:Assumptions ,delta :Assumptions):(Assumptions*Assumptions) := gamma_delta in
-    let gamma_proves :list Formula  := all gamma in
-    flat_map
-     (fun f : Formula =>
-      match f with
-      | F_OfCo f_a : formula  =>
-        all (delta : Assumptions ++ ((A_Intuit f_a)::nil))
-      | _ =>
-        nil
-      end)
-     gamma_proves : list Formula )
-  (all_splits A). *)
-
 Definition all_P_ImplEl (all: Assumptions -> list Formula) (A:Assumptions) :=
  flat_map
   (fun gamma_delta:(Assumptions*Assumptions) =>
@@ -556,11 +551,49 @@ Definition all_P_ImplEl (all: Assumptions -> list Formula) (A:Assumptions) :=
       (fun fg =>
        match fg with
        | F_Impl f_a f_b =>
-         if fd = f_a then
+         if Formula_eq_dec fd f_a then
          f_b::nil else nil
        | _ =>
         nil
        end)
+      gamma_proves)
+     delta_proves)
+  (all_splits A).
+
+Lemma all_P_ImplEl_sound:
+ forall A f,
+  In f (all_P_ImplEl all A) -> Provable A f.
+Proof.
+ unfold all_P_ImplEl.
+ intros A f.
+ rewrite in_flat_map.
+ intros [[gamma delta] [IN_all_splits IN_f_flat]].
+ rewrite in_flat_map in IN_f_flat.
+ destruct IN_f_flat as [fg [IN_allg IN_f_flat]].
+ rewrite in_flat_map in IN_f_flat.
+ destruct IN_f_flat as [fd [IN_alld IN_f_match]].
+ destruct fd; simpl in IN_f_match; try tauto.
+ destruct (Formula_eq_dec fg fd1); simpl in IN_f_match; try tauto.
+ destruct IN_f_match as [EQ_f | F]; try tauto.
+ rewrite EQ_f in *; clear EQ_f fd2.
+ rewrite <- e in *; clear e fd1.
+ apply all_splits_correct in IN_all_splits.
+ rewrite <- IN_all_splits.
+ eapply P_ImplEl; eauto.
+Qed. 
+
+Definition all_P_BothId (all: Assumptions -> list Formula) (A:Assumptions) :=
+ flat_map
+  (fun gamma_delta:(Assumptions*Assumptions) =>
+    let (gamma,delta) := gamma_delta in
+    let gamma_proves := all gamma in
+    let delta_proves := all delta in
+    flat_map
+     (fun fd =>
+      flat_map
+      (fun fg =>
+       F_Both fg fd :: nil 
+       )
       gamma_proves)
      delta_proves)
   (all_splits A).
@@ -578,6 +611,7 @@ Fixpoint all_theorems (n:nat) A :=
   ++ (all_P_Weaken (all_theorems n) A)
   ++ (all_P_OfCoId (all_theorems n) A)
   ++ (all_P_OfCoEl (all_theorems n) A)
+  ++ (all_P_ImplEl (all_theorems n) A)
   
   (* ++ one for each case *)
  end.
@@ -591,7 +625,8 @@ Proof.
  (* one for each case *)
  unfold all_P_OfCoEl. simpl. rewrite IHn.
  simpl. unfold all_P_Exc. simpl. rewrite IHn.
- unfold all_P_OfCoId. simpl. rewrite IHn. tauto.
+ unfold all_P_OfCoId. simpl. rewrite IHn. simpl.
+ unfold all_P_ImplEl. simpl. rewrite IHn. tauto.
 Qed.
 
 Theorem all_theorems_sound:
@@ -608,7 +643,8 @@ Proof.
  rewrite in_app_iff.
  rewrite in_app_iff.
  rewrite in_app_iff.
- intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |In_P_OfCoEl]]]]](*| one for each case *) ].
+ rewrite in_app_iff.
+ intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |[In_P_OfCoEl| In_P_ImplEl]]]]]](*| one for each case *) ].
  apply all_P_L_Id_sound. exact In_L_Id.
  apply all_P_I_Id_sound. exact In_I_Id.
  apply (all_P_Exc_sound (all_theorems n)).
@@ -629,6 +665,9 @@ Proof.
  apply all_theorems_nil.
  apply IHn.
  exact In_P_OfCoEl.
+ apply (all_P_ImplEl_sound (all_theorems n)).
+ apply IHn.
+ exact In_P_ImplEl.
 Qed.
 
 (* Completeness: *)
