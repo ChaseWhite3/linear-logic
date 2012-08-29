@@ -671,7 +671,7 @@ Fixpoint all_theorems (n:nat) A :=
   ++ (all_P_OfCoId (all_theorems n) A)
   ++ (all_P_OfCoEl (all_theorems n) A)
   ++ (all_P_ImplEl (all_theorems n) A)
-  
+  ++ (all_P_BothId (all_theorems n) A)
   (* ++ one for each case *)
  end.
 
@@ -685,7 +685,8 @@ Proof.
  unfold all_P_OfCoEl. simpl. rewrite IHn.
  simpl. unfold all_P_Exc. simpl. rewrite IHn.
  unfold all_P_OfCoId. simpl. rewrite IHn. simpl.
- unfold all_P_ImplEl. simpl. rewrite IHn. tauto.
+ unfold all_P_ImplEl. simpl. rewrite IHn. simpl.
+ unfold all_P_BothId. simpl. rewrite IHn. tauto.
 Qed.
 
 Theorem all_theorems_sound:
@@ -703,7 +704,8 @@ Proof.
  rewrite in_app_iff.
  rewrite in_app_iff.
  rewrite in_app_iff.
- intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |[In_P_OfCoEl| In_P_ImplEl]]]]]](*| one for each case *) ].
+ rewrite in_app_iff.
+ intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |[In_P_OfCoEl| [In_P_ImplEl| In_P_BothId]]]]]]](*| one for each case *) ].
  apply all_P_L_Id_sound. exact In_L_Id.
  apply all_P_I_Id_sound. exact In_I_Id.
  apply (all_P_Exc_sound (all_theorems n)).
@@ -727,6 +729,9 @@ Proof.
  apply (all_P_ImplEl_sound (all_theorems n)).
  apply IHn.
  exact In_P_ImplEl.
+ apply (all_P_BothId_sound (all_theorems n)).
+ apply IHn.
+ exact In_P_BothId.
 Qed.
 
 (* Completeness: *)
