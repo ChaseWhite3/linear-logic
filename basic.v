@@ -56,7 +56,7 @@ Inductive Provable : Assumptions -> Formula -> Prop :=
 | P_BothId  : forall (Gamma Delta: Assumptions) (A B : Formula),
   Provable Gamma A -> Provable Delta B -> Provable (Gamma ++ Delta) (F_Both A B)
 | P_BothEl  : forall (Gamma Delta : Assumptions) (A B C : Formula),
-  Provable Gamma (F_Both A B) -> Provable (Gamma ++ (A_Linear A)::(A_Linear B)::nil) C ->
+  Provable Gamma (F_Both A B) -> Provable (Delta ++ (A_Linear A)::(A_Linear B)::nil) C ->
             Provable (Gamma++Delta) C
 | P_ChooId  : forall (Gamma : Assumptions) (A B : Formula),
   Provable Gamma A -> Provable Gamma B -> Provable Gamma (F_Choo A B)
@@ -164,7 +164,7 @@ Section By_Definition.
  Qed.
 
  Theorem simpl_and_both_el: forall (Gamma Delta : Assumptions) (A B C : Formula),
-  Provable Gamma (F_Both A B) -> Provable (Gamma ++ (A_Linear A)::(A_Linear B)::nil) C ->
+  Provable Gamma (F_Both A B) -> Provable (Delta ++ (A_Linear A)::(A_Linear B)::nil) C ->
             Provable (Gamma++Delta) C.
  Proof.
  intros.
@@ -617,7 +617,7 @@ Proof.
  apply all_sound. rewrite <- H2. apply IN_allg.
 Qed.
 
-(** Definition all_P_BothEl all (A:Assumptions) :=
+Definition all_P_BothEl all (A:Assumptions) :=
  flat_map
   (fun gamma_delta:(Assumptions*Assumptions) =>
     let (gamma,delta) := gamma_delta in
@@ -639,7 +639,7 @@ Lemma all_P_BothEl_sound:
 Proof.
  induction A as [|a A]; simpl; intros f.
 
- unfold all_P_OfCoEl. simpl. rewrite all_nil_eq. 
+ unfold all_P_BothEl. simpl. rewrite all_nil_eq. 
  simpl.
 
  tauto.
@@ -651,10 +651,28 @@ Proof.
  rewrite <- In_S.
  destruct a_f; simpl in In_a_d; try tauto.
  (** eauto. *)
- apply (P_OfCoEl gamma delta a_f f).
+ apply (P_BothEl gamma delta a_f1 a_f2).
  apply all_sound. exact In_a_g.
  apply all_sound. exact In_a_d. 
-Qed. *)
+Qed.
+
+Definition all_P_ChooId all (A:Assumptions) :=
+ flat_map
+  (fun gamma_delta:(Assumptions*Assumptions) =>
+    let (gamma,delta) := gamma_delta in
+    let gamma_proves := all gamma in
+    let delta_proves := all delta in
+    flat_map
+     (fun f_a =>
+      flat_map
+      (fun f_b =>
+       F_Choo f_a f_b :: nil 
+       )
+      gamma_proves)
+     gamma_proves)
+  (all_splits A).
+
+
 
 
 End all_cases.
@@ -672,6 +690,7 @@ Fixpoint all_theorems (n:nat) A :=
   ++ (all_P_OfCoEl (all_theorems n) A)
   ++ (all_P_ImplEl (all_theorems n) A)
   ++ (all_P_BothId (all_theorems n) A)
+  ++ (all_P_BothEl (all_theorems n) A)
   (* ++ one for each case *)
  end.
 
@@ -686,7 +705,8 @@ Proof.
  simpl. unfold all_P_Exc. simpl. rewrite IHn.
  unfold all_P_OfCoId. simpl. rewrite IHn. simpl.
  unfold all_P_ImplEl. simpl. rewrite IHn. simpl.
- unfold all_P_BothId. simpl. rewrite IHn. tauto.
+ unfold all_P_BothId. simpl. rewrite IHn. 
+ unfold all_P_BothEl. simpl. rewrite IHn. tauto.
 Qed.
 
 Theorem all_theorems_sound:
@@ -705,7 +725,8 @@ Proof.
  rewrite in_app_iff.
  rewrite in_app_iff.
  rewrite in_app_iff.
- intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |[In_P_OfCoEl| [In_P_ImplEl| In_P_BothId]]]]]]](*| one for each case *) ].
+ rewrite in_app_iff.
+ intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |[In_P_OfCoEl| [In_P_ImplEl| [In_P_BothId| In_P_BothEl]]]]]]]](*| one for each case *) ].
  apply all_P_L_Id_sound. exact In_L_Id.
  apply all_P_I_Id_sound. exact In_I_Id.
  apply (all_P_Exc_sound (all_theorems n)).
@@ -732,6 +753,10 @@ Proof.
  apply (all_P_BothId_sound (all_theorems n)).
  apply IHn.
  exact In_P_BothId.
+ apply (all_P_BothEl_sound (all_theorems n)).
+ apply all_theorems_nil.
+ apply IHn.
+ exact In_P_BothEl.
 Qed.
 
 (* Completeness: *)
