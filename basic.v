@@ -598,6 +598,65 @@ Definition all_P_BothId (all: Assumptions -> list Formula) (A:Assumptions) :=
      delta_proves)
   (all_splits A).
 
+Lemma all_P_BothId_sound:
+ forall A f,
+  In f (all_P_BothId all A) -> Provable A f.
+Proof.
+ unfold all_P_BothId.
+ intros A f.
+ rewrite in_flat_map.
+ intros [[gamma delta] [IN_all_splits IN_f_flat]].
+ rewrite in_flat_map in IN_f_flat.
+ destruct IN_f_flat as [fg [IN_allg IN_f_flat]].
+ rewrite in_flat_map in IN_f_flat.
+ destruct IN_f_flat as [fd [IN_alld IN_f_both]].
+ destruct f; simpl in IN_f_both; inversion IN_f_both; inversion H; try tauto.
+ apply all_splits_correct in IN_all_splits. rewrite <- IN_all_splits.
+ eapply P_BothId. 
+ apply all_sound. rewrite <- H1. apply IN_alld.
+ apply all_sound. rewrite <- H2. apply IN_allg.
+Qed.
+
+(** Definition all_P_BothEl all (A:Assumptions) :=
+ flat_map
+  (fun gamma_delta:(Assumptions*Assumptions) =>
+    let (gamma,delta) := gamma_delta in
+    let gamma_proves := all gamma in
+    flat_map
+     (fun f =>
+      match f with
+      | F_Both f_a f_b =>
+        all (delta ++ ((A_Linear f_a) :: (A_Linear f_b) ::nil))
+      | _ =>
+        nil
+      end)
+     gamma_proves)
+  (all_splits A).
+
+Lemma all_P_BothEl_sound:
+ forall A f,
+  In f (all_P_BothEl all A) -> Provable A f.
+Proof.
+ induction A as [|a A]; simpl; intros f.
+
+ unfold all_P_OfCoEl. simpl. rewrite all_nil_eq. 
+ simpl.
+
+ tauto.
+ unfold all_P_BothEl. rewrite in_flat_map.
+ intros [[gamma delta] [In_S In_a]].
+ rewrite in_flat_map in In_a.
+ destruct In_a as [a_f [In_a_g In_a_d]].
+ rewrite (all_splits_correct (a::A) gamma delta) in In_S.
+ rewrite <- In_S.
+ destruct a_f; simpl in In_a_d; try tauto.
+ (** eauto. *)
+ apply (P_OfCoEl gamma delta a_f f).
+ apply all_sound. exact In_a_g.
+ apply all_sound. exact In_a_d. 
+Qed. *)
+
+
 End all_cases.
 
 Fixpoint all_theorems (n:nat) A :=
