@@ -657,20 +657,103 @@ Proof.
 Qed.
 
 Definition all_P_ChooId all (A:Assumptions) :=
+  let gamma_proves := all A in
+  flat_map
+  (fun f_a =>
+     flat_map
+     (fun f_b =>
+      F_Choo f_a f_b :: nil 
+     )
+    gamma_proves)
+  gamma_proves.
+
+Lemma all_P_ChooId_sound:
+ forall A f,
+  In f (all_P_ChooId all A) -> Provable A f.
+Proof.
+ unfold all_P_ChooId.
+ intros A f. 
+ rewrite in_flat_map.
+ intros [g [IN_all_splits IN_f_flat]].
+ rewrite in_flat_map in IN_f_flat.
+ destruct IN_f_flat as [g' [IN_allg IN_f_flat]].
+
+ apply all_sound in IN_allg.
+ apply all_sound in IN_all_splits.
+ simpl in IN_f_flat.
+ destruct IN_f_flat as [EQ|F]; try tauto.
+ rewrite <- EQ in *; clear EQ f.
+ eauto.
+Qed.
+
+Definition all_P_ChooEl1 all (A:Assumptions) :=
+ let gamma_proves := all A in
+ flat_map 
+ (fun fChoo =>
+  match fChoo with
+  | F_Choo f_a f_b => f_a :: nil
+  | _ => 
+   nil
+  end
+  )
+ gamma_proves.
+
+Lemma all_P_ChooEl1_sound:
+ forall A f,
+  In f (all_P_ChooEl1 all A) -> Provable A f.
+Proof.
+ unfold all_P_ChooEl1.
+ intros A f.
+ rewrite in_flat_map.
+ intros [g [IN_all_splits IN_f_match]].
+ destruct g; simpl in IN_f_match; try tauto.
+ destruct IN_f_match as [EQ|F]; try tauto.
+ rewrite <- EQ in *; clear EQ f.
+ eauto.
+Qed.
+
+Definition all_P_ChooEl2 all (A:Assumptions) :=
+ let gamma_proves := all A in
+ flat_map 
+ (fun fChoo =>
+  match fChoo with
+  | F_Choo f_a f_b => f_b :: nil
+  | _ => 
+   nil
+  end
+  )
+ gamma_proves.
+
+Lemma all_P_ChooEl2_sound:
+ forall A f,
+  In f (all_P_ChooEl2 all A) -> Provable A f.
+Proof.
+ unfold all_P_ChooEl2.
+ intros A f.
+ rewrite in_flat_map.
+ intros [g [IN_all_splits IN_f_match]].
+ destruct g; simpl in IN_f_match; try tauto.
+ destruct IN_f_match as [EQ|F]; try tauto.
+ rewrite <- EQ in *; clear EQ f.
+ eauto.
+Qed.
+
+Definition all_P_EithEl all (A:Assumptions) :=
  flat_map
   (fun gamma_delta:(Assumptions*Assumptions) =>
     let (gamma,delta) := gamma_delta in
     let gamma_proves := all gamma in
-    let delta_proves := all delta in
     flat_map
-     (fun f_a =>
-      flat_map
-      (fun f_b =>
-       F_Choo f_a f_b :: nil 
-       )
-      gamma_proves)
+      match f with
+      | F_Both f_a f_b =>
+        all (delta ++ ((A_Linear f_a) :: (A_Linear f_b) ::nil))
+      | _ =>
+        nil
+      end)
      gamma_proves)
-  (all_splits A).
+  (all_splits A).  
+ 
+
 
 
 
@@ -691,6 +774,9 @@ Fixpoint all_theorems (n:nat) A :=
   ++ (all_P_ImplEl (all_theorems n) A)
   ++ (all_P_BothId (all_theorems n) A)
   ++ (all_P_BothEl (all_theorems n) A)
+  ++ (all_P_ChooId (all_theorems n) A)
+  ++ (all_P_ChooEl1 (all_theorems n) A)
+  ++ (all_P_ChooEl2 (all_theorems n) A)
   (* ++ one for each case *)
  end.
 
@@ -706,7 +792,10 @@ Proof.
  unfold all_P_OfCoId. simpl. rewrite IHn. simpl.
  unfold all_P_ImplEl. simpl. rewrite IHn. simpl.
  unfold all_P_BothId. simpl. rewrite IHn. 
- unfold all_P_BothEl. simpl. rewrite IHn. tauto.
+ unfold all_P_BothEl. simpl. rewrite IHn.
+ unfold all_P_ChooId. simpl. rewrite IHn.
+ unfold all_P_ChooEl1. simpl. rewrite IHn.
+ unfold all_P_ChooEl2. simpl. rewrite IHn. tauto.
 Qed.
 
 Theorem all_theorems_sound:
@@ -726,7 +815,10 @@ Proof.
  rewrite in_app_iff.
  rewrite in_app_iff.
  rewrite in_app_iff.
- intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |[In_P_OfCoEl| [In_P_ImplEl| [In_P_BothId| In_P_BothEl]]]]]]]](*| one for each case *) ].
+ rewrite in_app_iff.
+ rewrite in_app_iff.
+ rewrite in_app_iff.
+ intros [In_L_Id | [In_I_Id | [In_P_Exc | [In_P_Contract|[In_P_Weaken | [In_P_OfCoId |[In_P_OfCoEl| [In_P_ImplEl| [In_P_BothId| [In_P_BothEl| [In_P_ChooId| [In_P_ChooEl1| In_P_ChooEl2]]]]]]]]]]](*| one for each case *) ].
  apply all_P_L_Id_sound. exact In_L_Id.
  apply all_P_I_Id_sound. exact In_I_Id.
  apply (all_P_Exc_sound (all_theorems n)).
@@ -757,6 +849,15 @@ Proof.
  apply all_theorems_nil.
  apply IHn.
  exact In_P_BothEl.
+ apply (all_P_ChooId_sound (all_theorems n)).
+ apply IHn.
+ exact In_P_ChooId.
+ apply (all_P_ChooEl1_sound (all_theorems n)).
+ apply IHn.
+ exact In_P_ChooEl1.
+ apply (all_P_ChooEl2_sound (all_theorems n)).
+ apply IHn.
+ exact In_P_ChooEl2.
 Qed.
 
 (* Completeness: *)
