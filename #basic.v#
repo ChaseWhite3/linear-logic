@@ -933,9 +933,11 @@ Admitted.
 
 Check theorem_prover. *)
 
+Recursive Extraction all_theorems.
+
 Hypothesis a: Atom.
 
-Eval compute in (all_theorems 3 ((A_Intuit (F_Atom a))::nil)).
+Eval compute in (all_theorems 2 ((A_Intuit (F_Atom a))::nil)).
 
  
    
