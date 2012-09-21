@@ -1,8 +1,13 @@
 
-Variable Atom : Type.
+Definition Atom := nat.
+
+Require Import Arith.Peano_dec.
+Definition Atom_eq_dec := eq_nat_dec.
+
+(* Variable Atom : Type.
 Hypothesis Atom_eq_dec:
  forall (x y:Atom),
-  {x = y} + {x <> y}.
+  {x = y} + {x <> y}. *)
 Hint Resolve Atom_eq_dec.
 
 Inductive Formula : Type :=
