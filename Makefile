@@ -1,10 +1,10 @@
-ifeq ($(which racket),"")
+ifeq ($(shell which racket),)
 RACKET="/Volumes/Racket v5.3/Racket v5.3/bin/racket"
 else
 RACKET=racket
 endif
 
-ifeq ($(which coqc),"")
+ifeq ($(shell which coqc),)
 COQ="/Volumes/coqide-8.3pl4/CoqIdE_8.3pl4.app/Contents/Resources/bin/coqc"
 else
 COQ=coqc
