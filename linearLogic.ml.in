@@ -1,0 +1,7 @@
+#include "basic.ml"
+
+let linearLogic () = 
+let some_gamma =
+#include "linearLogic-gamma.ml"
+in
+	all_theorems 3 some_gamma
