@@ -14,3 +14,11 @@ linearLogic-gamma.ml
 basic.ml
 
 linearLogic.ml
+
+*.cmi
+
+*.cmo
+
+linearLogic.out
+
+linearLogic

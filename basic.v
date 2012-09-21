@@ -1,13 +1,8 @@
 
-Definition Atom := nat.
-
-Require Import Arith.Peano_dec.
-Definition Atom_eq_dec := eq_nat_dec.
-
-(* Variable Atom : Type.
+Variable Atom : Type.
 Hypothesis Atom_eq_dec:
  forall (x y:Atom),
-  {x = y} + {x <> y}. *)
+  {x = y} + {x <> y}.
 Hint Resolve Atom_eq_dec.
 
 Inductive Formula : Type :=
@@ -940,6 +935,25 @@ Admitted.
 Check theorem_prover. *)
 
 Extraction Language Ocaml.
+
+Extract Constant Atom => "int".
+Extract Constant Atom_eq_dec => "(=)".
+
+Extract Inductive unit => "unit" [ "()" ].
+Extract Inductive bool => "bool" [ "true" "false" ].
+Extract Inductive sumbool => "bool" [ "true" "false" ].
+Extract Inductive list => "list" [ "[]" "(::)" ].
+Extract Inductive prod => "(*)"  [ "(,)" ].
+
+(**
+Extract Constant app => "append".
+Extract Constant map => "map".
+Extract Constant forallb => "for_all".
+**)
+
+Extract Inductive nat => int [ "0" "succ" ]
+  "(fun fO fS n -> if n=0 then fO () else fS (n-1))".
+
 Extraction "basic.ml" all_theorems.
  
    

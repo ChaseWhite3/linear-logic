@@ -1,7 +1,15 @@
+open List;;
+open Printf;;
+
 #include "basic.ml"
 
-let linearLogic () = 
 let some_gamma =
 #include "linearLogic-gamma.ml"
-in
-	all_theorems (S (S (S O))) some_gamma
+;;
+
+let depth = int_of_string Sys.argv.(1) ;;
+let formulas = (all_theorems depth some_gamma) ;;
+let how_many = length formulas ;;
+
+printf "%u\n" how_many ;;
+ 
