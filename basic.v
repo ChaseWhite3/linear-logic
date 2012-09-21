@@ -939,6 +939,8 @@ Extraction Language Ocaml.
 Extract Constant Atom => "int".
 Extract Constant Atom_eq_dec => "(=)".
 
+Extract Constant Formula_eq_dec => "(=)".
+
 Extract Inductive unit => "unit" [ "()" ].
 Extract Inductive bool => "bool" [ "true" "false" ].
 Extract Inductive sumbool => "bool" [ "true" "false" ].
