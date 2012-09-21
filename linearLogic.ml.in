@@ -4,4 +4,4 @@ let linearLogic () =
 let some_gamma =
 #include "linearLogic-gamma.ml"
 in
-	all_theorems 3 some_gamma
+	all_theorems (S (S (S O))) some_gamma

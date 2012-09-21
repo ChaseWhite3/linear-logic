@@ -5,13 +5,21 @@
 (define Atom->nat
   (make-hash))
 
+(define int2nat
+  (match-lambda
+    [0
+     'O]
+    [n
+     `(S ,(int2nat (sub1 n)))]))
+
 (define format-formula
   (match-lambda
    [(? string? s)
     `(F_Atom 
-      ,(hash-ref! Atom->nat s
+      ,(int2nat 
+        (hash-ref! Atom->nat s
                   (λ ()
-                    (hash-count Atom->nat))))]
+                    (hash-count Atom->nat)))))]
    [`(and ,left ,right)
     `(F_Both 
       (,(format-formula left) "," ,(format-formula right)))]
@@ -26,8 +34,7 @@
    [(list-rest car cdr)
     `(Cons ((A_Linear ,(format-formula car)) "," ,(format-list cdr)))]))
 
-(require racket/pretty)
-(pretty-display (format-list (port->list)))
+(display (format-list (port->list)))
 
 #;(for ([(k v) (in-hash Atom->nat)])
   (printf "(* ~a = ~a *)\n"
