@@ -18,5 +18,7 @@ linearLogic.ml: linearLogic.ml.in basic.ml linearLogic-gamma.ml
 linearLogic: linearLogic.ml
 	ocamlc -o $@ $^
 	
+DEPTH=3
+	
 linearLogic.out: linearLogic
-	./$^ 0 | tee $@
+	./$^ ${DEPTH} | tee $@
