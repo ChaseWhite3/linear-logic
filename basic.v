@@ -945,8 +945,9 @@ Extract Inductive sumbool => "bool" [ "true" "false" ].
 Extract Inductive list => "list" [ "[]" "(::)" ].
 Extract Inductive prod => "(*)"  [ "(,)" ].
 
+Extract Constant app => "set_app".
+
 (**
-Extract Constant app => "append".
 Extract Constant map => "map".
 Extract Constant forallb => "for_all".
 **)

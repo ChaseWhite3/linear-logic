@@ -1,6 +1,22 @@
 open List;;
 open Printf;;
 
+(** val set_app : 'a1 list -> 'a1 list -> 'a1 list **)
+
+let rec set_cons e l =
+ match l with
+  | [] -> e :: []
+  | f::l ->
+    if e = f then
+     l
+    else
+     f :: (set_cons e l)
+
+let rec set_app l m =
+  match l with
+  | [] -> m
+  | a::l1 -> set_cons a (set_app l1 m)
+
 #include "basic.ml"
 
 let rec format_formula f =
