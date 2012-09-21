@@ -3,6 +3,12 @@ open Printf;;
 
 #include "basic.ml"
 
+let rec format_formula f =
+ sprintf "a -o %s" "b"
+
+let print_formula f =
+ printf "%s\n" (format_formula f)
+
 let some_gamma =
 #include "linearLogic-gamma.ml"
 ;;
@@ -13,3 +19,4 @@ let how_many = length formulas ;;
 
 printf "%u\n" how_many ;;
  
+iter print_formula formulas ;;
