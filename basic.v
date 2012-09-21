@@ -1,3 +1,7 @@
+
+Require Import SfLib.
+Require Import ImpCEvalFun.
+
 Variable Atom : Type.
 Hypothesis Atom_eq_dec:
  forall (x y:Atom),
@@ -933,9 +937,12 @@ Admitted.
 
 Check theorem_prover. *)
 
+Extraction Language Ocaml.
+Extraction "/Users/auto/Desktop/linearLogic.ml" all_theorems.
+
 Hypothesis a: Atom.
 
-Eval compute in (all_theorems 3 ((A_Intuit (F_Atom a))::nil)).
+Eval compute in (all_theorems 2 ((A_Intuit (F_Atom a))::nil)).
 
  
    
