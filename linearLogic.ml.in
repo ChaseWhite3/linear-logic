@@ -22,7 +22,7 @@ let rec set_app l m =
 let rec format_formula f =
  match f with
   | F_Atom a -> 
-    sprintf "%i" a
+    sprintf "%s" a
   | F_Impl (f0, f1) ->
     sprintf "(%s -o %s)" (format_formula f0) (format_formula f1)
   | F_Both (f0, f1) ->

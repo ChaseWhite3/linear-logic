@@ -9,6 +9,8 @@
   (match-lambda
    [(? string? s)
     `(F_Atom 
+      ,(format "\"~a\"" s)
+      #;
       ,(hash-ref! Atom->nat s
                   (λ ()
                     (hash-count Atom->nat))))]

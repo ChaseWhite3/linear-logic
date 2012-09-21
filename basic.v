@@ -936,7 +936,7 @@ Check theorem_prover. *)
 
 Extraction Language Ocaml.
 
-Extract Constant Atom => "int".
+Extract Constant Atom => "string".
 Extract Constant Atom_eq_dec => "(=)".
 
 Extract Constant Formula_eq_dec => "(=)".
@@ -947,9 +947,8 @@ Extract Inductive sumbool => "bool" [ "true" "false" ].
 Extract Inductive list => "list" [ "[]" "(::)" ].
 Extract Inductive prod => "(*)"  [ "(,)" ].
 
-Extract Constant app => "set_app".
-
 (**
+Extract Constant app => "set_app". <--- bad, unsound
 Extract Constant map => "map".
 Extract Constant forallb => "for_all".
 **)
