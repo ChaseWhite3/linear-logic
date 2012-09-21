@@ -20,7 +20,19 @@ let rec set_app l m =
 #include "basic.ml"
 
 let rec format_formula f =
- sprintf "a -o %s" "b"
+ match f with
+  | F_Atom a -> 
+    sprintf "%i" a
+  | F_Impl (f0, f1) ->
+    sprintf "(%s -o %s)" (format_formula f0) (format_formula f1)
+  | F_Both (f0, f1) ->
+    sprintf "(%s /\\ %s)" (format_formula f0) (format_formula f1)
+  | F_Choo (f0, f1) ->
+    sprintf "(%s \\/ %s)" (format_formula f0) (format_formula f1)
+  | F_Eith (f0, f1) ->
+    sprintf "(%s + %s)" (format_formula f0) (format_formula f1)
+  | F_OfCo f0 ->
+    sprintf "(! %s)" (format_formula f0) 
 
 let print_formula f =
  printf "%s\n" (format_formula f)
