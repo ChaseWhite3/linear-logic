@@ -6,8 +6,11 @@ all: linearLogic.out
 basic.ml: basic.v
 	${COQ} $^
 
-linearLogic-gamma.ml: roomer-ll.rkt rooms.rktd
-	${RACKET} roomer-ll.rkt < rooms.rktd > $@
+INPUT=rooms.rktd
+INPUT=small.rktd
+
+linearLogic-gamma.ml: roomer-ll.rkt ${INPUT}
+	${RACKET} roomer-ll.rkt < ${INPUT} > $@
 
 linearLogic.ml: linearLogic.ml.in basic.ml linearLogic-gamma.ml
 	cpp linearLogic.ml.in $@

@@ -22,3 +22,5 @@ linearLogic.ml
 linearLogic.out
 
 linearLogic
+
+*.rktd~
