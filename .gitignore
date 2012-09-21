@@ -6,3 +6,9 @@ roomer-ll.rkt~
 *.vo
 
 *.v#
+
+*.mli
+
+linearLogic-gamma.ml
+
+basic.ml
