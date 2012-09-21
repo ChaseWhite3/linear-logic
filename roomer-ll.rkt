@@ -26,13 +26,9 @@
    [(list-rest car cdr)
     `(Cons ((A_Linear ,(format-formula car)) "," ,(format-list cdr)))]))
 
-(printf "Definition some_gamma :=\n")
-
 (require racket/pretty)
 (pretty-display (format-list (port->list)))
 
-(printf ".\n\n")
-
-(for ([(k v) (in-hash Atom->nat)])
+#;(for ([(k v) (in-hash Atom->nat)])
   (printf "(* ~a = ~a *)\n"
           k v))
