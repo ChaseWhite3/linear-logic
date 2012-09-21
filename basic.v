@@ -954,6 +954,6 @@ Extract Constant forallb => "for_all".
 Extract Inductive nat => int [ "0" "succ" ]
   "(fun fO fS n -> if n=0 then fO () else fS (n-1))".
 
+Set Extraction AccessOpaque.
+
 Extraction "basic.ml" all_theorems.
- 
-   
