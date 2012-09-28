@@ -934,6 +934,10 @@ Admitted.
 
 Check theorem_prover. *)
 
+Extraction Language Scheme.
+
+Extraction "basic" all_theorems.
+
 Extraction Language Ocaml.
 
 Extract Constant Atom => "string".
