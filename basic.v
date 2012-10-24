@@ -391,7 +391,7 @@ Qed.
 
 Definition all_P_I_Id A:=
  match A with
- | nil => nil
+	 | nil => nil
  | a :: l =>
    match l with
    | nil => 
@@ -478,6 +478,8 @@ Proof.
  tauto.
  intros. destruct a. apply in_nil in H. 
  tauto.
+ apply P_Weaken.
+ apply all_sound.
  eauto.
  Qed.
 
