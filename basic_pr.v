@@ -271,23 +271,24 @@ Theorem all_P_OfCoEl_sound:
  forall A p f,
   In (p,f) (all_P_OfCoEl A) -> Provable p A f.
 Proof.
- induction A as [|a A]; simpl; intros f.
+ induction A as [|a A]; simpl; intros fullProof.
 
  unfold all_P_OfCoEl. simpl. rewrite all_nil_eq. 
  simpl.
 
  tauto.
  unfold all_P_OfCoEl. intros. rewrite in_flat_map in H.
- destruct H.
- inversion H.
- destruct H1.
- rewrite in_flat_map in H1.
- destruct In_a as [a_f [In_a_g In_a_d]].
- rewrite (all_splits_correct (a::A) gamma delta) in In_S.
- rewrite <- In_S.
- destruct a_f; simpl in In_a_d; try tauto.
+ destruct H as [[Gamma Delta] [In_allsplits_A In_Pr_OfCoEl]].
+ rewrite in_flat_map in In_Pr_OfCoEl.
+ destruct In_Pr_OfCoEl as [[proof_of_a f_a] [In_a_g In_a_d]].
+ rewrite (all_splits_correct (a::A) Gamma Delta) in In_allsplits_A.
+ rewrite <- In_allsplits_A.
+ destruct f_a; simpl in In_a_d; try tauto. 
+ (** destruct f0; simpl in H4; try tauto. *)
  (** eauto. *)
- apply (P_OfCoEl gamma delta a_f f).
+ rewrite in_map_iff in In_a_d. destruct In_a_d as [[proof_of_b ans] [eqv_Pr_pair In_b_final]].
+ destruct eqv_Pr_pair.
+ apply (P_OfCoEl proof_of_a proof_of_b Gamma Delta).
  apply all_sound. exact In_a_g.
  apply all_sound. exact In_a_d. 
 Qed.
