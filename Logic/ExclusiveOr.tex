@@ -1,0 +1,48 @@
+
+\documentclass[12pt]{article}
+\usepackage{bussproofs}
+\usepackage{comment}
+\usepackage{cmll}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{centernot}
+\usepackage{color}
+\usepackage{mathabx}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{property}[theorem]{Property}
+\newtheorem{corolary}[theorem]{Corolary}
+\theoremstyle{definition}
+\newtheorem{define}[theorem]{Definition}
+\newcommand\nb[1]{{#1}^{\bot}}
+\title{Linear-Logic Rule}
+\author{Arthur MILCHIOR}
+% This is the "centered" symbol
+\def\fCenter{{\mbox{\Large$\rightarrow$}}}
+
+% Optional to turn on the short abbreviations
+\EnableBpAbbreviations
+
+% \alwaysRootAtTop  % makes proofs upside down
+% \alwaysRootAtBottom % -- this is the default setting
+
+\begin{document}
+\section{Exclusive OR}
+
+\begin{tabular}{ c | c | c  | c | c | c }
+    P & Q & $P \lor Q$ & $P \land Q$ & $\lnot (P \land Q)$ & $(P \lor Q) \land \lnot (P \land Q)$ \\
+    \hline			
+    T & T & T & T & F & F\\ \hline
+    T & F & T & F & T & T\\ \hline
+    F & T & T & F & T & T\\ \hline
+    F & F & F & F & T & F\\
+    \hline  
+    \end{tabular}
+    \newline
+    \newline
+    
+    A Boolean operator working on two variables that has the value of true if one but not both of the variables has a value of true.
+
+\end{document}

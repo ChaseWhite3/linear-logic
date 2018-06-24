@@ -1,0 +1,203 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  23 JUN 2018 14:46
+entering extended mode
+ restricted \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**/WHS/linear-logic/ll-rule.tex
+(/WHS/linear-logic/ll-rule.tex
+LaTeX2e <2018-04-01> patch level 2
+Babel <3.18> and hyphenation patterns for 84 language(s) loaded.
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/size12.clo
+File: size12.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/bussproofs/bussproofs.sty
+Proof Tree (bussproofs) style macros. Version 1.1.
+\theLevel=\count88
+\myMaxLevel=\count89
+\myBoxA=\box26
+\myBoxB=\box27
+\myBoxC=\box28
+\myBoxD=\box29
+\myBoxLL=\box30
+\myBoxRL=\box31
+\thisAboveSkip=\dimen103
+\thisBelowSkip=\dimen104
+\newScoreStart=\dimen105
+\newScoreEnd=\dimen106
+\newCenter=\dimen107
+\displace=\dimen108
+\leftLowerAmt=\dimen109
+\rightLowerAmt=\dimen110
+\scoreHeight=\dimen111
+\scoreDepth=\dimen112
+\htLbox=\dimen113
+\htRbox=\dimen114
+\htRRbox=\dimen115
+\htRRRbox=\dimen116
+\htAbox=\dimen117
+\htCbox=\dimen118
+) (/usr/local/texlive/2018/texmf-dist/tex/latex/comment/comment.sty
+\CommentStream=\write3
+
+Excluding comment 'comment')
+(/usr/local/texlive/2018/texmf-dist/tex/latex/cmll/cmll.sty
+Package: cmll 2010/04/20 Linear Logic symbols for Computer Modern
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\symllsymbols=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `llsymbols' in version `bold'
+(Font)                  U/cmllr/m/n --> U/cmllr/bx/n on input line 49.
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\@emptytoks=\toks14
+\symAMSa=\mathgroup5
+\symAMSb=\mathgroup6
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2017/10/31 v2.20.4
+\thm@style=\toks15
+\thm@bodyfont=\toks16
+\thm@headfont=\toks17
+\thm@notefont=\toks18
+\thm@headpunct=\toks19
+\thm@preskip=\skip43
+\thm@postskip=\skip44
+\thm@headsep=\skip45
+\dth@everypar=\toks20
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup7
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 52.
+)
+\c@theorem=\count90
+ (./ll-rule.aux)
+\openout1 = `ll-rule.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 26.
+LaTeX Font Info:    ... okay on input line 26.
+\myBox1=\box32
+\myScoreStart1=\dimen119
+\myCenter1=\dimen120
+\myScoreEnd1=\dimen121
+LaTeX Font Info:    Try loading font information for U+cmllr on input line 33.
+ (/usr/local/texlive/2018/texmf-dist/tex/latex/cmll/ucmllr.fd)
+LaTeX Font Info:    Try loading font information for U+msa on input line 33.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 33.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Try loading font information for U+lasy on input line 33.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)
+\myBox2=\box33
+\myScoreStart2=\dimen122
+\myCenter2=\dimen123
+\myScoreEnd2=\dimen124
+
+Overfull \hbox (2.61108pt too wide) in paragraph at lines 31--44
+$[]$ $[]$ 
+ []
+
+
+Overfull \hbox (20.2359pt too wide) in paragraph at lines 45--57
+[]$[]$ $[]$ 
+ []
+
+
+Overfull \hbox (2.61108pt too wide) in paragraph at lines 72--85
+$[]$ $[]$ 
+ []
+
+
+Overfull \hbox (20.2359pt too wide) in paragraph at lines 86--98
+[]$[]$ $[]$ 
+ []
+
+
+Overfull \hbox (2.61108pt too wide) in paragraph at lines 102--126
+$[]$ $[]$
+ []
+
+
+Overfull \hbox (2.61108pt too wide) in paragraph at lines 102--126
+[]$ $[]$ 
+ []
+
+
+Overfull \hbox (2.61108pt too wide) in paragraph at lines 129--142
+$[]$ $[]$ 
+ []
+
+
+Overfull \hbox (20.2359pt too wide) in paragraph at lines 143--155
+[]$[]$ $[]$ 
+ []
+
+[1
+
+{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+(./ll-rule.aux) ) 
+Here is how much of TeX's memory you used:
+ 978 strings out of 492649
+ 11725 string characters out of 6129622
+ 76018 words of memory out of 5000000
+ 4882 multiletter control sequences out of 15000+600000
+ 10256 words of font info for 43 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 25i,5n,27p,195b,218s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmbx12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/cmll/cml
+lr12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
+i12.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi
+8.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.
+pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb
+></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+</usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+Output written on ll-rule.pdf (1 page, 75364 bytes).
+PDF statistics:
+ 40 PDF objects out of 1000 (max. 8388607)
+ 28 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

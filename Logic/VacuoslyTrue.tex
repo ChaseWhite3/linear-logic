@@ -1,0 +1,45 @@
+
+\documentclass[12pt]{article}
+\usepackage{bussproofs}
+\usepackage{comment}
+\usepackage{cmll}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{centernot}
+\usepackage{color}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{property}[theorem]{Property}
+\newtheorem{corolary}[theorem]{Corolary}
+\theoremstyle{definition}
+\newtheorem{define}[theorem]{Definition}
+\newcommand\nb[1]{{#1}^{\bot}}
+\title{Linear-Logic Rule}
+\author{Arthur MILCHIOR}
+% This is the "centered" symbol
+\def\fCenter{{\mbox{\Large$\rightarrow$}}}
+
+% Optional to turn on the short abbreviations
+\EnableBpAbbreviations
+
+% \alwaysRootAtTop  % makes proofs upside down
+% \alwaysRootAtBottom % -- this is the default setting
+
+\begin{document}
+\section{Vacuously True}
+
+\begin{tabular}{ l | c | r }
+    P & Q & $P \implies Q$ \\
+    \hline			
+    T & T & T \\ \hline
+    T & F & F \\ \hline
+    F & T & \color{red}T \\ \hline
+    F & F & \color{red}T \\
+    \hline  
+  \end{tabular}
+
+  Because of Biconditional being the equality in logic vacuous statements are true. False must be equivalent to false, create both conditionals being vacuously true to accomplish logical equivalence.
+
+\end{document}

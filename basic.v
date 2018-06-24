@@ -29,6 +29,7 @@ Hint Constructors Assumption.
 Definition Assumptions := list Assumption.
 Hint Unfold Assumptions.
 
+Require Extraction.
 Require Import List.
 Open Scope list_scope.
 
